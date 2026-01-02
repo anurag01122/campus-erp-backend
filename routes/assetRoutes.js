@@ -1,19 +1,28 @@
 import express from "express";
-import Booking from "../models/Booking.js";
+import Asset from "../models/Asset.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/request", authMiddleware, async (req, res) => {
+/**
+ * GET all assets
+ */
+router.get("/", authMiddleware, async (req, res) => {
   try {
-    const booking = await Booking.create({
-      hall: req.body.hall,
-      date: req.body.date,
-      timeSlot: req.body.timeSlot,
-      bookedBy: req.user.id,
-    });
+    const assets = await Asset.find();
+    res.json(assets);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
-    res.status(201).json(booking);
+/**
+ * CREATE asset (admin)
+ */
+router.post("/", authMiddleware, async (req, res) => {
+  try {
+    const asset = await Asset.create(req.body);
+    res.status(201).json(asset);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
