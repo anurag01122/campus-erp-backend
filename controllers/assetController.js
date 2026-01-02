@@ -12,11 +12,12 @@ export const addAsset = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const asset = await Asset.create({
-      name,
-      category,
-      createdBy: new mongoose.Types.ObjectId(req.user.id), // ✅ FIX
-    });
+const asset = await Asset.create({
+  name,
+  category,
+  createdBy: req.user.id, // now STRING matches schema
+});
+
 
     res.status(201).json(asset);
   } catch (error) {

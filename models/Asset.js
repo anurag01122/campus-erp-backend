@@ -4,29 +4,16 @@ const assetSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
     },
     category: {
       type: String,
-      required: true
+      required: true,
     },
-    serialNumber: {
-      type: String,
-      unique: true
+    createdBy: {
+      type: String, // 🔥 TEMPORARY — NOT ObjectId
+      required: true,
     },
-    condition: {
-      type: String,
-      default: "Good"
-    },
-    isAvailable: {
-      type: Boolean,
-      default: true
-    },
-    assignedTo: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      default: null
-    }
   },
   { timestamps: true }
 );
