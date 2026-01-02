@@ -1,5 +1,17 @@
-import mongoose from "mongoose";
+import Asset from "../models/Asset.js";
 
+// GET all assets
+export const getAssets = async (req, res) => {
+  try {
+    const assets = await Asset.find();
+    res.json(assets);
+  } catch (error) {
+    console.error("GET ASSETS ERROR:", error);
+    res.status(500).json({ message: "Failed to fetch assets" });
+  }
+};
+
+// ADD asset
 export const addAsset = async (req, res) => {
   try {
     const { name, category } = req.body;
@@ -8,20 +20,15 @@ export const addAsset = async (req, res) => {
       return res.status(400).json({ message: "Name and category required" });
     }
 
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-const asset = await Asset.create({
-  name,
-  category,
-  createdBy: req.user.id, // now STRING matches schema
-});
-
+    const asset = await Asset.create({
+      name,
+      category,
+      createdBy: req.user.id,
+    });
 
     res.status(201).json(asset);
   } catch (error) {
-    console.error("ADD ASSET ERROR 👉", error);
+    console.error("ADD ASSET ERROR:", error);
     res.status(500).json({ message: "Failed to add asset" });
   }
 };
