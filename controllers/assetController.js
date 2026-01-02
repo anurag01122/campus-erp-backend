@@ -1,39 +1,24 @@
-import Asset from "../models/Asset.js";
+const addAsset = async (req, res) => {
+  try {
+    const { name, category } = req.body;
 
-// Admin: Add asset
-export const addAsset = async (req, res) => {
-  const asset = await Asset.create(req.body);
-  res.status(201).json(asset);
-};
+    if (!name || !category) {
+      return res.status(400).json({ message: "Name and category are required" });
+    }
 
-// Get all assets
-export const getAssets = async (req, res) => {
-  const assets = await Asset.find().populate("assignedTo", "name email");
-  res.json(assets);
-};
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "User not authorized" });
+    }
 
-// Member: Request asset
-export const requestAsset = async (req, res) => {
-  const asset = await Asset.findById(req.params.id);
+    const asset = await Asset.create({
+      name,
+      category,
+      createdBy: req.user.id,
+    });
 
-  if (!asset || !asset.isAvailable) {
-    return res.status(400).json({ message: "Asset not available" });
+    res.status(201).json(asset);
+  } catch (error) {
+    console.error("ADD ASSET ERROR:", error);
+    res.status(500).json({ message: "Failed to add asset" });
   }
-
-  asset.isAvailable = false;
-  asset.assignedTo = req.user.id;
-  await asset.save();
-
-  res.json({ message: "Asset assigned successfully" });
-};
-
-// Admin: Return asset
-export const returnAsset = async (req, res) => {
-  const asset = await Asset.findById(req.params.id);
-
-  asset.isAvailable = true;
-  asset.assignedTo = null;
-  await asset.save();
-
-  res.json({ message: "Asset returned" });
 };
